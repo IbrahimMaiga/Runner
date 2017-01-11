@@ -75,8 +75,7 @@ class Runner
 
     /**
      * @param $params
-     * @return mixed
-     * @throws \Exception
+     * @return null|string
      */
     private function resolveParams($params)
     {
