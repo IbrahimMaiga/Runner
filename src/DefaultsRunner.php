@@ -1,18 +1,21 @@
 <?php
 
 /**
- * @author Ibrahim Maïga
+ * @author Ibrahim Maïga <maiga.ibrm@gmail.com>
  */
 
 namespace Runner\Engine;
 
-
+/**
+ * Class DefaultsRunner
+ * @package Runner\Engine
+ */
 class DefaultsRunner implements DefaultsRunnerInterface
 {
     /**
      * @var string
      */
-    private $controller;
+    private $_class;
 
     /**
      * @var string
@@ -29,48 +32,65 @@ class DefaultsRunner implements DefaultsRunnerInterface
      */
     private $parameters;
 
-    public function __construct($parameters){
+    /**
+     * DefaultsRunner constructor.
+     * @param $parameters
+     */
+    public function __construct(array $parameters) {
         $this->parameters = $parameters;
-        if (!is_null($parameters)){
-            $this->controller = $this->get($parameters, 'controller');
-            $this->action = $this->get($parameters, 'action');
-            $this->params = $this->get($parameters, 'params');
+        if (!is_null($this->parameters)) {
+            $this->_class = $this->get('class');
+            $this->action = $this->get('action');
+            $this->params = $this->get('params');
         }
     }
 
-    private function get($parameters, $key){
-        return isset($parameters[$key]) ? $parameters[$key] : null;
+    /**
+     * @param $key
+     * @return mixed
+     */
+    private function get($key) {
+        return isset($this->parameters[$key]) ? $this->parameters[$key] : null;
     }
 
     /**
-     * @param $controller
+     * @param $_class
      */
-    public function setController($controller){
-        if (is_string($controller)){
-            $this->controller = $controller;
+    public function setClass($_class) {
+        if (is_string($_class)) {
+            $this->_class = $_class;
+        } else {
+            throw new \InvalidArgumentException('class name must be a string');
         }
     }
 
     /**
      * @param $action
      */
-    public function setAction($action){
-        if (is_string($action)){
+    public function setAction($action) {
+        if (is_string($action)) {
             $this->action = $action;
+        } else {
+            throw new \InvalidArgumentException('action must be a string');
         }
     }
 
-    public function operate(){
-        return $this->executeDefaults($this->controller, $this->action, $this->params);
+    public function operate() {
+        return $this->executeDefaults($this->_class, $this->action, $this->params);
     }
 
     /**
-     * @param $controller controller to call
-     * @param $action controller method to call
-     * @param $params method parameters
-     * @return returns the value returned by the callback function, false otherwise
+     * @param $_class string _class to call
+     * @param $action string _class method to call
+     * @param $params array method parameters
+     * @return mixed the value returned by the callback function, false otherwise
      */
-    private function executeDefaults($controller, $action, $params){
-        return call_user_func_array(array(new $controller(), $action), $params);
+    private function executeDefaults($_class, $action, $params) {
+        if (!is_null($_class) && !is_null($action)) {
+            $method = 'call_user_func';
+            if (is_array($params)) $method .= '_array';
+            return $method([new $_class(), $action], $params);
+        }
+        return false;
     }
 }
