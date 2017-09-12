@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @author Ibrahim Maïga
+ * @author Ibrahim Maïga <maiga.ibrm@gmail.com>
  */
 
 
@@ -17,7 +17,7 @@ use Runner\Exception\CallBackRunnerException;
 class CallBackRunner implements CallBackRunnerInterface
 {
     /**
-     * @var Closure
+     * @var \Closure
      */
     private $callback;
 
@@ -27,14 +27,22 @@ class CallBackRunner implements CallBackRunnerInterface
     private $params = array();
 
     /**
-     * CallBackRunner constructor.
-     * @param $params
+     * @var array
      */
-    public function __construct($params)
-    {
-        $this->params = $params;
-        if (isset($this->params['callback']))
-            $this->setCallBack($this->params['callback']);
+    private $parameters = array();
+
+    /**
+     * CallBackRunner constructor.
+     * @param $parameters
+     */
+    public function __construct(array $parameters) {
+        $this->parameters = $parameters;
+        if (isset($this->parameters['callback'])) {
+            $this->setCallBack($this->parameters['callback']);
+        }
+        if (isset($this->parameters['params'])) {
+            $this->params = $parameters['params'];
+        }
     }
 
     /**
@@ -42,11 +50,13 @@ class CallBackRunner implements CallBackRunnerInterface
      * @return $this the current instance
      * @throws CallBackRunnerException
      */
-    public function setCallBack($callback){
-        if ($callback instanceof \Closure)
+    public function setCallBack($callback) {
+        if ($callback instanceof \Closure) {
             $this->callback = $callback;
-        else
+        } else {
             throw new CallBackRunnerException("the index callback must be a Closure");
+        }
+        return $this;
     }
 
 
@@ -54,11 +64,10 @@ class CallBackRunner implements CallBackRunnerInterface
      * @return mixed
      * @throws CallBackRunnerException
      */
-    public function operate()
-    {
-        if (!is_null($this->callback))
-           return $this->executeMethod($this->callback, $this->params);
-
+    public function operate() {
+        if (!is_null($this->callback)) {
+            return $this->executeMethod($this->callback, $this->params);
+        }
         throw new CallBackRunnerException(sprintf("null closure"));
     }
 
@@ -67,7 +76,9 @@ class CallBackRunner implements CallBackRunnerInterface
      * @param $params
      * @return mixed
      */
-    private function executeMethod($callback, $params){
-        return call_user_func($callback, $params);
+    private function executeMethod($callback, $params) {
+        $method = 'call_user_func';
+        if (is_array($params)) $method .= '_array';
+        return $method($callback, $params);
     }
 }
