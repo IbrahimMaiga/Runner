@@ -1,29 +1,28 @@
 {
-    "name": "kanfa/runner",
-    "description": "Run a callback, or an accessible method of a class by giving the parameters if require",
-    "keywords": ["runner", "run"],
-    "homepage": "https://www.github.com/kanfa/Runner",
-    "authors": [
-        {
-            "name": "Ibrahim Maiga",
-            "email": "maiga.ibrm@gmail.com"
-        }
-    ],
-
-    "require": {
-        "symfony/yaml": "^3.1"
-    },
-
-    "require-dev": {
-        "phpunit/phpunit": "^5.5"
-    },
-
-    "autoload": {
-        "psr-4": {
-            "Runner\\": "src/"
-        },
-        "exclude-from-classmap": [
-            "/tests/"
-        ]
+  "name": "kanfa/runner",
+  "description": "Run a callback, or an accessible method of a class by giving the parameters if require",
+  "keywords": [
+    "runner",
+    "run"
+  ],
+  "homepage": "https://www.github.com/kanfa/Runner",
+  "authors": [
+    {
+      "name": "Ibrahim Maiga",
+      "email": "maiga.ibrm@gmail.com"
     }
+  ],
+  "require-dev": {
+    "phpunit/phpunit": "^5.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "Runner\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Runner\\Tests\\": "tests/"
+    }
+  }
 }
