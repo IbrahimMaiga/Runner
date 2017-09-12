@@ -1,13 +1,16 @@
 <?php
 
 /**
- * @author Ibrahim Maïga
+ * @author Ibrahim Maïga <maiga.ibrm@gmail.com>
  */
 
 
 namespace Runner\Engine;
 
-
+/**
+ * Interface RunnerInterface
+ * @package Runner\Engine
+ */
 interface RunnerInterface
 {
     /**

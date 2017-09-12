@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @author Ibrahim Maïga.
+ * @author Ibrahim Maïga <maiga.ibrm@gmail.com>
  */
 
 
@@ -11,16 +11,15 @@ namespace Runner\Exception;
  * Class DefaultsRunnerException
  * @package Routing\Exception
  */
-class DefaultsRunnerException extends \Exception
+class DefaultsRunnerException extends \RuntimeException
 {
     /**
      * DefaultsRunnerException constructor.
      * @param string $message
      * @param int $code
-     * @param Exception $previous
+     * @param \RuntimeException $previous
      */
-    public function __construct($message, $code = 0, Exception $previous)
-    {
+    public function __construct($message, $code = 0, \RuntimeException $previous = null) {
         parent::__construct($message, $code, $previous);
     }
 
