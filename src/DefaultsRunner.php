@@ -57,22 +57,20 @@ class DefaultsRunner implements DefaultsRunnerInterface
      * @param $_class
      */
     public function setClass($_class) {
-        if (is_string($_class)) {
-            $this->_class = $_class;
-        } else {
+        if (!is_string($_class)) {
             throw new \InvalidArgumentException('class name must be a string');
         }
+        $this->_class = $_class;
     }
 
     /**
      * @param $action
      */
     public function setAction($action) {
-        if (is_string($action)) {
-            $this->action = $action;
-        } else {
+        if (!is_string($action)) {
             throw new \InvalidArgumentException('action must be a string');
         }
+        $this->action = $action;
     }
 
     public function operate() {

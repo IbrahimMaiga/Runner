@@ -39,9 +39,9 @@ class CallBackRunner implements CallBackRunnerInterface
         $this->parameters = $parameters;
         if (isset($this->parameters['callback'])) {
             $this->setCallBack($this->parameters['callback']);
-        }
-        if (isset($this->parameters['params'])) {
-            $this->params = $parameters['params'];
+            if (isset($this->parameters['params'])) {
+                $this->params = $parameters['params'];
+            }
         }
     }
 
@@ -51,11 +51,10 @@ class CallBackRunner implements CallBackRunnerInterface
      * @throws CallBackRunnerException
      */
     public function setCallBack($callback) {
-        if ($callback instanceof \Closure) {
-            $this->callback = $callback;
-        } else {
+        if (!($callback instanceof \Closure)) {
             throw new CallBackRunnerException("the index callback must be a Closure");
         }
+        $this->callback = $callback;
         return $this;
     }
 

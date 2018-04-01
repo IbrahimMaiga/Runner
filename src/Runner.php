@@ -46,23 +46,26 @@ class Runner
      * @var bool|array
      */
     private $defineClasses;
+
     /**
      * Runner constructor.
-     * @param array $params
      * @param null $file
      */
-    public function __construct(array $params, $file = null) {
-        $this->params = $params;
+    public function __construct($file=null) {
         $this->file = $file;
-        $this->available = $this->resolveParams($params);
         $this->defineClasses = is_null($file) ? false : $this->getClasses($file);
     }
 
     /**
      * Run Runner
+     * @param $params
      * @return mixed
      */
-    public function run() {
+    public function run(array $params) {
+        $this->available = $this->resolveParams($params);
+        if (!$this->available) {
+            throw new \RuntimeException();
+        }
         $_class = !$this->defineClasses ? self::$defaults[$this->available] : $this->defineClasses[$this->available];
         $this->runner = new $_class($this->params);
         return $this->doRun($this->runner);
@@ -81,28 +84,31 @@ class Runner
      * @return bool|string
      */
     private function resolveParams($params) {
-        if (!is_null($params) && !empty($params)) {
+        $available = false;
+        if ($params) {
+            if (!is_null($params) && !empty($params)) {
 
-            if (isset($params['defaults'])) {
-                $defaults = explode(':', $params['defaults']);
-                if (count($defaults) ===  2){
-                    $params['class'] = $defaults[0];
-                    $params['action'] = $defaults[1];
+                if (isset($params['defaults'])) {
+                    $defaults = explode(':', $params['defaults']);
+                    if (count($defaults) ===  2){
+                        $params['class'] = $defaults[0];
+                        $params['action'] = $defaults[1];
+                    }
                 }
-            }
 
-            if (isset($params['class']) && isset($params['action'])) {
-                $this->unset_all($params, 'class', 'action');
-                $available = 'defaults_r';
+                if (isset($params['class']) && isset($params['action'])) {
+                    $this->unset_all($params, 'class', 'action');
+                    $available = 'defaults_r';
+                }
+                elseif (isset($params['callback'])) {
+                    $this->unset_all($params, 'callback');
+                    $available = 'callback_r';
+                }
+                $this->params = $params;
+            } else {
+                trigger_error("Empty or null parameters");
+                die();
             }
-            elseif (isset($params['callback'])) {
-                $this->unset_all($params, 'callback');
-                $available = 'callback_r';
-            } else $available = false;
-
-        } else {
-            trigger_error("Empty or null parameters");
-            die();
         }
         return $available;
     }
