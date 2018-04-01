@@ -32,6 +32,11 @@ class CallBackRunner implements CallBackRunnerInterface
     private $parameters = array();
 
     /**
+     * @var mixed
+     */
+    private $toInject;
+
+    /**
      * CallBackRunner constructor.
      * @param $parameters
      */
@@ -79,5 +84,9 @@ class CallBackRunner implements CallBackRunnerInterface
         $method = 'call_user_func';
         if (is_array($params)) $method .= '_array';
         return $method($callback, $params);
+    }
+
+    public function injectIfExist($toInject) {
+        $this->toInject = $toInject;
     }
 }

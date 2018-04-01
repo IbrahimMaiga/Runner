@@ -14,7 +14,13 @@ namespace Runner\Engine;
 interface RunnerInterface
 {
     /**
-     * @return mixed
+     * @return string
      */
     public function operate();
+
+    /**
+     * @param $toInject
+     * @return mixed
+     */
+    public function injectIfExist($toInject);
 }

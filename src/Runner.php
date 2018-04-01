@@ -43,6 +43,11 @@ class Runner
     private $available;
 
     /**
+     * @var mixed
+     */
+    private $toInject;
+
+    /**
      * @var bool|array
      */
     private $defineClasses;
@@ -51,7 +56,7 @@ class Runner
      * Runner constructor.
      * @param null $file
      */
-    public function __construct($file=null) {
+    public function __construct($file = null) {
         $this->file = $file;
         $this->defineClasses = is_null($file) ? false : $this->getClasses($file);
     }
@@ -61,13 +66,14 @@ class Runner
      * @param $params
      * @return mixed
      */
-    public function run(array $params) {
+    public function run($params) {
         $this->available = $this->resolveParams($params);
         if (!$this->available) {
             throw new \RuntimeException();
         }
         $_class = !$this->defineClasses ? self::$defaults[$this->available] : $this->defineClasses[$this->available];
         $this->runner = new $_class($this->params);
+        $this->runner->injectIfExist($this->toInject);
         return $this->doRun($this->runner);
     }
 
@@ -100,6 +106,7 @@ class Runner
                     $this->unset_all($params, 'class', 'action');
                     $available = 'defaults_r';
                 }
+
                 elseif (isset($params['callback'])) {
                     $this->unset_all($params, 'callback');
                     $available = 'callback_r';
@@ -107,12 +114,10 @@ class Runner
                 $this->params = $params;
             } else {
                 trigger_error("Empty or null parameters");
-                die();
             }
         }
         return $available;
     }
-
 
     /**
      * @param $file
@@ -134,5 +139,12 @@ class Runner
         foreach ($elements as $element) {
             unset($array[$element]);
         }
+    }
+
+    /**
+     * @param $toInject
+     */
+    public function injectIfExist($toInject) {
+        $this->toInject = $toInject;
     }
 }
