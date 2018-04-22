@@ -90,3 +90,13 @@ default_r = \Custom\DefaultsRunner\FakeClass
 callback_r = \Custom\CallbackRunner\FakeClass
 ````
 
+**PHP file**
+```sh
+<?php
+
+return [
+    'default_r' => '\Custom\DefaultsRunner\FakeClass'
+    'callback_r' => '\Custom\CallbackRunner\FakeClass'
+];
+````
+
