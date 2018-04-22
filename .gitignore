@@ -2,3 +2,5 @@
 /runner.iml
 /composer.lock
 /vendor/
+/coverage
+/example
