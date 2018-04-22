@@ -130,7 +130,11 @@ class DefaultsRunner implements DefaultsRunnerInterface
                         } else {
                             $instanceToInject = new $this->toInject;
                         }
-                        if (isset($instanceToInject)) $params = array_merge($params, [$instanceToInject]);
+
+                        if (isset($instanceToInject)) {
+                            $params = array_merge($params, [$instanceToInject]);
+                        }
+
                     } catch (\ReflectionException $e) {
                         trigger_error(sprintf('the class %s does not exist', $_class));
                     }
