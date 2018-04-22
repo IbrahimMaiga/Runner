@@ -10,5 +10,4 @@ $params = [];
 $params['class'] = 'Runner\Tests\FakeClass';
 $params['action'] = 'id';
 $params['params'] = [2];
-$runner = new Runner\Engine\Runner($params);
-echo $runner->run();
+echo \Runner\Engine\Runner::singleton('file.ini')->run($params);

@@ -3,8 +3,10 @@
  * @author Ibrahim Maïga <maiga.ibrm@gmail.com>.
  */
 
-namespace Runner\Engine;
+namespace Runner\Tests;
 
+
+use Runner\Engine\CallBackRunnerInterface;
 
 class ExampleCallBack implements CallBackRunnerInterface
 {
@@ -19,6 +21,15 @@ class ExampleCallBack implements CallBackRunnerInterface
      * @return mixed
      */
     public function operate() {
-        return true;
+        return 'ExampleCallBack';
+    }
+
+    /**
+     * @param $toInject
+     * @return mixed
+     */
+    public function injectIfExist($toInject)
+    {
+       return null;
     }
 }

@@ -7,21 +7,17 @@ require_once 'elements/FakeEmptyClass.php';
 /**
  * @author Ibrahim Maïga <maiga.ibrm@gmail.com>.
  */
+
+use PHPUnit\Framework\TestCase;
 use Runner\Engine\Runner;
 
 /**
  * Class RunnerTest
  */
-class RunnerTest extends \PHPUnit_Framework_TestCase
+class RunnerTest extends TestCase
 {
 
-    /**
-     * @var Runner
-     */
-    private $runner;
-
     protected function setUp() {
-        $this->runner = new Runner();
     }
 
     public function testRunWithCallBackPrimitiveParam() {
@@ -30,8 +26,7 @@ class RunnerTest extends \PHPUnit_Framework_TestCase
             return "Hi $kf!";
         };
         $params['params'] = 'Kanfa';
-        $this->runner = new Runner();
-        $this->assertEquals($this->runner->run($params), "Hi Kanfa!");
+        $this->assertEquals(Runner::invokeRun($params), "Hi Kanfa!");
     }
 
     public function testRunWithCallBackArrayParam() {
@@ -40,8 +35,7 @@ class RunnerTest extends \PHPUnit_Framework_TestCase
             return "Hi $kf!";
         };
         $params['params'] = ['Kanfa'];
-        $this->runner = new Runner();
-        $this->assertEquals($this->runner->run($params), "Hi Kanfa!");
+        $this->assertEquals(Runner::invokeRun($params), "Hi Kanfa!");
     }
 
     public function testRunWithCallBackAssociativeArrayParam() {
@@ -50,8 +44,7 @@ class RunnerTest extends \PHPUnit_Framework_TestCase
             return "Hi $kf!";
         };
         $params['params'] = ['kf' => 'Kanfa'];
-        $this->runner = new Runner();
-        $this->assertEquals($this->runner->run($params), "Hi Kanfa!");
+        $this->assertEquals(Runner::invokeRun($params), "Hi Kanfa!");
     }
 
     public function testRunWithCallBackEmptyParam() {
@@ -59,7 +52,7 @@ class RunnerTest extends \PHPUnit_Framework_TestCase
         $params['callback'] = function (): string {
             return "Hi Kanfa!";
         };
-        $this->assertEquals($this->runner->run($params), "Hi Kanfa!");
+        $this->assertEquals(Runner::invokeRun($params), "Hi Kanfa!");
     }
 
     public function testRunWithDefaultsPrimitiveParam() {
@@ -67,7 +60,7 @@ class RunnerTest extends \PHPUnit_Framework_TestCase
         $params['class'] = 'Runner\Tests\FakeClass';
         $params['action'] = 'id';
         $params['params'] = 2;
-        $this->assertEquals($this->runner->run($params), 2);
+        $this->assertEquals(Runner::invokeRun($params), 2);
     }
 
     public function testRunWithDefaultsArrayParam() {
@@ -75,7 +68,7 @@ class RunnerTest extends \PHPUnit_Framework_TestCase
         $params['class'] = 'Runner\Tests\FakeClass';
         $params['action'] = 'id';
         $params['params'] = [2];
-        $this->assertEquals($this->runner->run($params), 2);
+        $this->assertEquals(Runner::invokeRun($params), 2);
     }
 
     public function testRunWithDefaultsAssociativeArrayParam() {
@@ -83,13 +76,13 @@ class RunnerTest extends \PHPUnit_Framework_TestCase
         $params['class'] = 'Runner\Tests\FakeClass';
         $params['action'] = 'id';
         $params['params'] = ['id' => 2];
-        $this->assertEquals($this->runner->run($params), 2);
+        $this->assertEquals(Runner::invokeRun($params), 2);
     }
 
     public function testRunWithDefaultsEmptyParam() {
         $params = [];
         $params['class'] = 'Runner\Tests\FakeEmptyClass';
         $params['action'] = 'id';
-        $this->assertEquals($this->runner->run($params), 0);
+        $this->assertEquals(Runner::invokeRun($params), 0);
     }
 }
