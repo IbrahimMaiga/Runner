@@ -3,7 +3,8 @@
   "description": "Run a callback, or an accessible method of a class by giving the parameters if require",
   "keywords": [
     "runner",
-    "run"
+    "run",
+    "call"
   ],
   "homepage": "https://www.github.com/kanfa/Runner",
   "authors": [
@@ -12,8 +13,11 @@
       "email": "maiga.ibrm@gmail.com"
     }
   ],
+  "require": {
+    "php": ">=7.1"
+  },
   "require-dev": {
-    "phpunit/phpunit": "^5.5"
+    "phpunit/phpunit": "^6.5.5"
   },
   "autoload": {
     "psr-4": {
