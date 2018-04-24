@@ -1,5 +1,6 @@
 {
   "name": "kanfa/runner",
+  "license": "MIT",
   "description": "Run a callback, or an accessible method of a class by giving the parameters if require",
   "keywords": [
     "runner",
