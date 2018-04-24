@@ -28,5 +28,7 @@
     "psr-4": {
       "Runner\\Tests\\": "tests/"
     }
-  }
+  },
+  "minimum-stability": "dev-master",
+  "prefer-stable": true
 }
