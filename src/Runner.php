@@ -33,11 +33,6 @@ class Runner
     private $params = array();
 
     /**
-     * @var string
-     */
-    private $file;
-
-    /**
      * @var RunnerInterface
      */
     private $runner;
@@ -63,7 +58,6 @@ class Runner
      */
     public function __construct($file = null)
     {
-        $this->file = $file;
         $this->defineClasses = $this->getClasses($file);
         if (!empty($this->defineClasses) and is_array($this->defineClasses)) {
             if (count($this->defineClasses) > 2) {
@@ -124,7 +118,7 @@ class Runner
                         $params['class'] = $defaults[0];
                         $params['action'] = $defaults[1];
                     } else {
-                        trigger_error("params length must be equals to two");
+                        throw new \RuntimeException("params length must be equals to two");
                     }
                 }
 
@@ -137,7 +131,7 @@ class Runner
                 }
                 $this->params = $params;
             } else {
-                trigger_error("empty or null parameters");
+                throw new \RuntimeException("empty or null parameters");
             }
         }
         return $available;
