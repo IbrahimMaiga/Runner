@@ -38,7 +38,7 @@ $runner->run($params);
 or simply do
 
 ```sh
-Runner::invokeRun($params);
+Runner\Engine\Runner::invokeRun($params);
 ```
 
 **Class Method**
