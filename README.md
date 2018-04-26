@@ -41,6 +41,20 @@ or simply do
 Runner\Engine\Runner::invokeRun($params);
 ```
 
+
+You can add objects to inject as default parameters when create
+ runner instance as follow
+ 
+if you want to use the default configuration
+ ```sh
+ $runner =  Runner\Engine\Runner::createForm(new Class\To\Inject());
+ ```
+ otherwise
+ ```sh
+ $runner =  Runner\Engine\Runner::create('path/to/ini_or_php/file', new Class\To\Inject());
+ ```
+ this does not work for callback calls
+ 
 **Class Method**
 
 Same as above, except that instead of a given function of recalls, we give a class name and a method name, if the method exists, it will be called if an exception is thrown
