@@ -33,7 +33,7 @@ class Runner
     private $params = array();
 
     /**
-     * @var RunnerInterface
+     * @var RunInterface|DefaultValue
      */
     private $runner;
 
@@ -43,7 +43,7 @@ class Runner
     private $available;
 
     /**
-     * @var mixed
+     * @var null|object|array
      */
     private $toInject;
 
@@ -55,23 +55,25 @@ class Runner
     /**
      * Runner constructor.
      * @param array|string|null $file
+     * @param null|object|array $toInject
      */
-    public function __construct($file = null)
+    public function __construct($file = null, $toInject = null)
     {
         $this->defineClasses = $this->getClasses($file);
-        if (!empty($this->defineClasses) and is_array($this->defineClasses)) {
+        if (!empty($this->defineClasses)) {
             if (count($this->defineClasses) > 2) {
                 throw new \RuntimeException('the array contains more values, the maximum number of value is two');
             } else {
                 $array = array_filter($this->defineClasses, function ($key) {
-                    return array_key_exists($key, self::$defaults);
+                    return !array_key_exists($key, self::$defaults);
                 }, ARRAY_FILTER_USE_KEY);
-                if (empty($array)) {
+                if (!empty($array)) {
                     throw new \RuntimeException('incorrect key in file or array');
                 }
             }
         }
         $this->defineClasses = array_merge(self::$defaults, $this->defineClasses);
+        $this->toInject = $toInject;
     }
 
     /**
@@ -88,51 +90,42 @@ class Runner
         }
         $_class = $this->defineClasses[$this->available];
         $this->runner = new $_class($this->params);
-        $this->runner->injectIfExist($this->toInject);
-        return $this->doRun($this->runner);
-    }
-
-    /**
-     * @param RunnerInterface $runner the interface that allows to make operate action
-     * @return string content returned by operate action
-     */
-    private function doRun(RunnerInterface $runner)
-    {
-        return $runner->operate();
+        if (!is_null($this->toInject) and $this->runner instanceof DefaultValue) {
+            $this->runner->inject($this->toInject);
+        }
+        return $this->runner->operate();
     }
 
     /**
      * checks if the parameter is valid and corresponds what we want
-     * @param array$params parameters
+     * @param array $params parameters
      * @return bool|string
      */
     private function resolveParams(array $params)
     {
         $available = false;
-        if ($params) {
-            if (!is_null($params) && !empty($params)) {
+        if (!empty($params)) {
 
-                if (isset($params['defaults'])) {
-                    $defaults = explode(':', $params['defaults']);
-                    if (count($defaults) === 2) {
-                        $params['class'] = $defaults[0];
-                        $params['action'] = $defaults[1];
-                    } else {
-                        throw new \RuntimeException("params length must be equals to two");
-                    }
+            if (isset($params['defaults'])) {
+                $defaults = explode(':', $params['defaults']);
+                if (count($defaults) === 2) {
+                    $params['class'] = $defaults[0];
+                    $params['action'] = $defaults[1];
+                } else {
+                    throw new \RuntimeException("params length must be equals to two");
                 }
-
-                if (isset($params['class']) && isset($params['action'])) {
-                    $this->unsetAll($params, 'class', 'action');
-                    $available = 'defaults_r';
-                } elseif (isset($params['callback'])) {
-                    $this->unsetAll($params, 'callback');
-                    $available = 'callback_r';
-                }
-                $this->params = $params;
-            } else {
-                throw new \RuntimeException("empty or null parameters");
             }
+
+            if (isset($params['class']) && isset($params['action'])) {
+                $this->unsetAll($params, 'class', 'action');
+                $available = 'defaults_r';
+            } elseif (isset($params['callback'])) {
+                $this->unsetAll($params, 'callback');
+                $available = 'callback_r';
+            }
+            $this->params = $params;
+        } else {
+            throw new \RuntimeException("empty or null parameters");
         }
         return $available;
     }
@@ -150,7 +143,18 @@ class Runner
             $fileParts = explode('.', $file);
             if (count($fileParts) == 2) {
                 $extension = $fileParts[1];
-                return $extension === 'php' ? require_once "$file" : parse_ini_file($file);
+                if ($extension === 'php') {
+                    $result = require_once "$file";
+                    if (is_array($result)) {
+                        return $result;
+                    } else {
+                        throw new \RuntimeException('incorrect value in file, value must be a array');
+                    }
+                } else if ($extension === 'ini') {
+                    return parse_ini_file($file);
+                } else {
+                    throw new \RuntimeException('incorrect file extension');
+                }
             } else {
                 throw new \RuntimeException('incorrect file');
             }
@@ -171,22 +175,15 @@ class Runner
     }
 
     /**
-     * @param $toInject
-     */
-    public function injectIfExist($toInject)
-    {
-        $this->toInject = $toInject;
-    }
-
-    /**
      * Creates singleton instance
      * @param array|string|null $file
+     * @param null $toInject
      * @return Runner
      */
-    public static function singleton($file = null)
+    public static function singleton($file = null, $toInject = null)
     {
         if (self::$singleton === null) {
-            self::$singleton = self::create($file);
+            self::$singleton = self::create($file, $toInject);
         }
 
         return self::$singleton;
@@ -195,11 +192,22 @@ class Runner
     /**
      * Creates this class instance
      * @param array|string|null $file
+     * @param null $toInject
      * @return Runner
      */
-    public static function create($file = null)
+    public static function create($file = null, $toInject = null)
     {
-        return new self($file);
+        return new self($file, $toInject);
+    }
+
+    /**
+     * Creates this class instance
+     * @param null|object|array $toInject
+     * @return Runner
+     */
+    public static function createFrom($toInject = null)
+    {
+        return new self(null, $toInject);
     }
 
     /**
