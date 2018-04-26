@@ -5,4 +5,4 @@
 if (!defined("FIXTURE_PATH")) {
     define("FIXTURE_PATH", dirname(__DIR__) . '/tests/elements');
 }
-require_once '../vendor/autoload.php';
+require_once __DIR__ . '../vendor/autoload.php';
