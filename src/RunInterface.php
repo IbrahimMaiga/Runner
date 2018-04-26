@@ -11,16 +11,10 @@ namespace Runner\Engine;
  * Interface RunnerInterface
  * @package Runner\Engine
  */
-interface RunnerInterface
+interface RunInterface
 {
     /**
      * @return string
      */
     public function operate();
-
-    /**
-     * @param $toInject
-     * @return mixed
-     */
-    public function injectIfExist($toInject);
 }
