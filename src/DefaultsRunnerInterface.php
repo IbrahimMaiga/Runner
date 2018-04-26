@@ -11,7 +11,7 @@ namespace Runner\Engine;
  * Interface DefaultsRunnerInterface
  * @package Runner\Engine
  */
-interface DefaultsRunnerInterface extends RunnerInterface
+interface DefaultsRunnerInterface extends RunInterface
 {
     /**
      * @param $_class
