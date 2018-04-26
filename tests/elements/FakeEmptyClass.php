@@ -13,4 +13,7 @@ class FakeEmptyClass
         return 0;
     }
 
+    public function result() {
+        echo 'Okay';
+    }
 }
