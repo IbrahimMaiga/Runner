@@ -10,5 +10,6 @@ cache:
      - ./vendor
 
 script:
+   - composer update
    - composer dump-autoload -o
    - vendor/bin/phpunit
