@@ -6,12 +6,16 @@
 
 namespace Runner\Engine;
 
+use Runner\Exception\DefaultsRunnerException;
+use Runner\InjectionUtils;
+
 /**
  * Class DefaultsRunner
  * @package Runner\Engine
  */
-class DefaultsRunner implements DefaultsRunnerInterface
+class DefaultsRunner implements DefaultsRunnerInterface, DefaultValue
 {
+    use InjectionUtils;
     /**
      * @var string
      */
@@ -49,22 +53,10 @@ class DefaultsRunner implements DefaultsRunnerInterface
     public function __construct(array $parameters)
     {
         $this->parameters = $parameters;
-        if (!is_null($this->parameters)) {
-            $this->_class = $this->get('class');
-            $this->action = $this->get('action');
-            $this->params = $this->get('params');
-        } else {
-            throw new \RuntimeException('null parameters');
+        if (isset($parameters['class']) and isset($parameters['action'])) {
+            $this->setClass($parameters['class'])->setAction($parameters['action']);
+            $this->params = $parameters['params'] ?? [];
         }
-    }
-
-    /**
-     * @param $key
-     * @return mixed
-     */
-    private function get($key)
-    {
-        return isset($this->parameters[$key]) ? $this->parameters[$key] : null;
     }
 
     /**
@@ -73,8 +65,8 @@ class DefaultsRunner implements DefaultsRunnerInterface
      */
     public function setClass($_class)
     {
-        if (is_string($_class)) {
-            throw new \InvalidArgumentException('class name must be a string');
+        if (!is_string($_class)) {
+            throw new DefaultsRunnerException('class name must be a string');
         }
         $this->_class = $_class;
         return $this;
@@ -87,7 +79,7 @@ class DefaultsRunner implements DefaultsRunnerInterface
     public function setAction($action)
     {
         if (!is_string($action)) {
-            throw new \InvalidArgumentException('action must be a string');
+            throw new DefaultsRunnerException('action must be a string');
         }
         $this->action = $action;
         return $this;
@@ -102,52 +94,28 @@ class DefaultsRunner implements DefaultsRunnerInterface
     }
 
     /**
-     * @param $_class string _class to call
-     * @param $action string _class method to call
-     * @param $params array method parameters
+     * @param string $_class string _class to call
+     * @param string $action string _class method to call
+     * @param array $params array method parameters
      * @return mixed the value returned by the callback function, false otherwise
      */
-    private function executeDefaults($_class, $action, $params)
+    private function executeDefaults(string $_class, string $action, array $params)
     {
         if (!is_null($_class) && !is_null($action)) {
             $method = 'call_user_func';
             if (is_array($params)) $method .= '_array';
-            if (array_key_exists($_class, self::$classesInstance)) {
-                $instance = self::$classesInstance[$_class];
-            } else {
-                if (!is_null($this->toInject)) {
-                    try {
-                        $reflection = new \ReflectionClass($_class);
-                        $reflectionMethod = $reflection->getMethod($action);
-                        $reflectionMethodParams = $reflectionMethod->getParameters();
-                        if (is_object($this->toInject)) {
-                            $className = get_class($this->toInject);
-                            foreach ($reflectionMethodParams as $reflectionMethodParam) {
-                                if ($reflectionMethodParam->getClass() != null and $reflectionMethodParam->getClass()->getName() == $className) {
-                                    $instanceToInject = $this->toInject;
-                                }
-                            }
-                        } else {
-                            $instanceToInject = new $this->toInject;
-                        }
-
-                        if (isset($instanceToInject)) {
-                            $params = array_merge($params, [$instanceToInject]);
-                        }
-
-                    } catch (\ReflectionException $e) {
-                        trigger_error(sprintf('the class %s does not exist', $_class));
-                    }
-                }
-                $instance = new $_class();
-                self::$classesInstance[$_class] = $instance;
+            if (!is_null($this->toInject)) {
+                $params = array_merge($this->doInjection($this->toInject, $_class, $action), $params);
             }
-            return $method([$instance, $action], $params);
+            if (!array_key_exists($_class, self::$classesInstance)) {
+                self::$classesInstance[$_class] = new $_class();
+            }
+            return $method([self::$classesInstance[$_class], $action], $params);
         }
         return false;
     }
 
-    public function injectIfExist($toInject)
+    public function inject($toInject)
     {
         $this->toInject = $toInject;
     }
