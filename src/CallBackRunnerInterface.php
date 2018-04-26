@@ -11,7 +11,7 @@ namespace Runner\Engine;
  * Interface CallBackRunnerInterface
  * @package Runner\Engine
  */
-interface CallBackRunnerInterface extends RunnerInterface
+interface CallBackRunnerInterface extends RunInterface
 {
     public function setCallBack($callback);
 }
